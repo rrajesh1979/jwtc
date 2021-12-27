@@ -17,6 +17,10 @@
         <cowsay.version>1.1.0</cowsay.version>
 
         <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
+
+        <jjwt.version>0.9.1</jjwt.version>
+
+        <javax.xml.version>2.4.0-b180830.0359</javax.xml.version>
     </properties>
 
     <dependencies>
@@ -43,6 +47,20 @@
             <groupId>com.github.ricksbrown</groupId>
             <artifactId>cowsay</artifactId>
             <version>${cowsay.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${javax.xml.version}</version>
         </dependency>
 
     </dependencies>
