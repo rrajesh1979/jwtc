@@ -1,7 +1,6 @@
 package org.rajesh.jwtc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -13,7 +12,6 @@ import java.util.concurrent.Callable;
 
 @Command(name = "jwtc", mixinStandardHelpOptions = true, version = "jwtc 0.1",
         description = "Encode and decode JWT tokens.")
-@Slf4j
 public class JWTC implements Callable<Integer> {
 
     @Parameters(index = "0", description = "Specify encode or decode.")
@@ -46,7 +44,7 @@ public class JWTC implements Callable<Integer> {
             //Convert payload JSON to Map
             payloadMap = payloadMapper.readValue(payload, HashMap.class);
         } catch (Exception e) {
-            log.error("Error while parsing payload JSON: {}", e.getMessage());
+            System.out.println("Error while parsing payload JSON: " + e.getMessage());
         }
 
         long nowMillis = System.currentTimeMillis();
@@ -64,21 +62,21 @@ public class JWTC implements Callable<Integer> {
         /* End: Build Header */
 
         if (option.equals("encode")) {
-            log.info("Encoding claims: {}", payloadMap);
-            log.info("Using secret: {}", secret);
-            log.info("Using algorithm: {}", algorithm);
+            System.out.println("Encoding claims: " + payloadMap);
+            System.out.println("Using secret: " + secret);
+            System.out.println("Using algorithm: " + algorithm);
 
             String jwt = JWTUtil.createJWT(payloadMap, secret, algorithm, ttlMillis);
-            log.info("JWT: {}", jwt);
+            System.out.println("JWT: " + jwt);
         } else if (option.equals("decode")) {
-            log.info("Decoding payload: {}", payloadMap);
-            log.info("Using secret: {}", secret);
-            log.info("Using algorithm: {}", algorithm);
+            System.out.println("Encoding claims: " + payloadMap);
+            System.out.println("Using secret: " + secret);
+            System.out.println("Using algorithm: " + algorithm);
             String decodedJWT = JWTUtil.decodeJWT(jwt, secret).toString();
-            log.info("Decoded JWT: {}", decodedJWT);
+            System.out.println("Decoded JWT: " + decodedJWT);
 
         } else {
-            log.error("Invalid option: {}", option);
+            System.out.println("Invalid option: " + option);
         }
         return 0;
     }
