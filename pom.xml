@@ -70,7 +70,6 @@
             </extension>
         </extensions>
         <plugins>
-
             <plugin>
                 <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
@@ -88,45 +87,6 @@
                         <goals>
                             <goal>check</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>net.revelc.code.formatter</groupId>
-                <artifactId>formatter-maven-plugin</artifactId>
-                <version>2.17.1</version>
-                <configuration>
-                    <configFile>etc/eclipse-formatter-config.xml</configFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>format</id>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>net.revelc.code</groupId>
-                <artifactId>impsort-maven-plugin</artifactId>
-                <version>1.6.2</version>
-                <configuration>
-                    <groups>java.,javax.,org.,com.</groups>
-                    <removeUnused>true</removeUnused>
-                    <staticAfter>true</staticAfter>
-                    <!-- <staticGroups>java.,javax.,org.w3c.,org.xml.,junit.</staticGroups> -->
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>sort-imports</id>
-                        <goals>
-                            <goal>sort</goal>
-                        </goals>
-                        <phase>process-sources</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -172,27 +132,7 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.graalvm.nativeimage</groupId>-->
-<!--                <artifactId>native-image-maven-plugin</artifactId>-->
-<!--                <version>${graalvm.version}</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>native-image</goal>-->
-<!--                        </goals>-->
-<!--                        <phase>package</phase>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <skip>false</skip>-->
-<!--                    <imageName>jwtc</imageName>-->
-<!--                    <mainClass>org.rajesh.jwtc.JWTC</mainClass>-->
-<!--                    <buildArgs>-->
-<!--                        &#45;&#45;no-fallback-->
-<!--                    </buildArgs>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
+
             <plugin>
                 <!-- Build an executable JAR -->
                 <groupId>org.apache.maven.plugins</groupId>
@@ -304,6 +244,17 @@
 
         </plugins>
     </build>
+
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            <id>native</id>-->
+<!--            <activation>-->
+<!--                <property>-->
+<!--                    <name>native</name>-->
+<!--                </property>-->
+<!--            </activation>-->
+<!--        </profile>-->
+<!--    </profiles>-->
 
     <pluginRepositories>
         <pluginRepository>
