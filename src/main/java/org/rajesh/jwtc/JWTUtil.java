@@ -14,7 +14,8 @@ import javax.xml.bind.DatatypeConverter;
 public class JWTUtil {
     public static String createJWT(HashMap payload, String secret, String algorithm, long ttlMillis) {
         //The JWT signature algorithm we will be using to sign the token
-        SignatureAlgorithm signatureAlgorithm = switch (algorithm) {
+        SignatureAlgorithm signatureAlgorithm
+                = switch (algorithm) {
             case "HS256" -> SignatureAlgorithm.HS256;
             case "HS384" -> SignatureAlgorithm.HS384;
             case "HS512" -> SignatureAlgorithm.HS512;

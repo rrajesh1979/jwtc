@@ -1,0 +1,25 @@
+project:
+  name: jwtc
+  version: 1.0-SNAPSHOT
+  description: JWT command line utility
+  longDescription: Command line utility for creating and decoding JWT tokens
+  website: https://github.com/rrajesh1979/jwtc
+  authors:
+    - Rajesh Rajagopalan
+  license: Apache-2
+  java:
+    mainClass: org.rajesh.jwtc.JWTC
+    groupId: org.rajesh.jwtc
+    version: 1.0-SNAPSHOT
+  extraProperties:
+    inceptionYear: 2021
+
+release:
+  github:
+    owner: rrajesh1979
+
+distributions:
+  app:
+    artifacts:
+      - path: '{{distributionName}}-{{projectVersion}}.jar'
+        transform: '{{distributionName}}/{{distributionName}}-{{projectEffectiveVersion}}.jar'

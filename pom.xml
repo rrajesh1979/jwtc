@@ -27,6 +27,9 @@
 <!--        <graalvm.version>20.3.4</graalvm.version>-->
 
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
+        <app.main.class>org.rajesh.jwtc.JWTC</app.main.class>
+
+        <native.maven.plugin.version>0.9.9</native.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -69,6 +72,14 @@
             <version>${javax.xml.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20211205</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
@@ -95,11 +106,6 @@
                         <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
                     </compilerArgs>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jreleaser</groupId>
-                <artifactId>jreleaser-maven-plugin</artifactId>
-                <version>${jreleaser.version}</version>
             </plugin>
 <!--            <plugin>-->
 <!--                <groupId>org.graalvm.nativeimage</groupId>-->
@@ -138,7 +144,114 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.jreleaser</groupId>
+                <artifactId>jreleaser-maven-plugin</artifactId>
+                <version>${jreleaser.version}</version>
+                <configuration>
+                    <jreleaser>
+                        <project>
+                            <snapshot>
+                                <label>{{ projectVersionNumber }}-early-access</label>
+                            </snapshot>
+                            <java>
+                                <mainClass>${app.main.class}</mainClass>
+                            </java>
+                            <description>JWT command line utility</description>
+                            <website>https://github.com/rrajesh1979/jwtc</website>
+                            <docsUrl>https://github.com/rrajesh1979/jwtc</docsUrl>
+                            <license>Apache 2.0</license>
+                            <authors>Rajesh Rajagopalan</authors>
+                        </project>
+                        <release>
+                            <github>
+                                <owner>rrajesh1979</owner>
+                                <overwrite>true</overwrite>
+                            </github>
+                        </release>
+                        <packagers>
+                            <brew>
+                                <active>RELEASE</active>
+                                <continueOnError>true</continueOnError>
+                                <multiPlatform>true</multiPlatform>
+                            </brew>
+                            <sdkman>
+                                <active>RELEASE</active>
+                                <continueOnError>true</continueOnError>
+                            </sdkman>
+                        </packagers>
+                        <distributions>
+                            <jwtc>
+                                <name>jwtc</name>
+                                <type>NATIVE_IMAGE</type>
+                                <artifacts>
+                                    <artifact>
+                                        <path>{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-linux-x86_64.tar.gz</path>
+                                        <transform>artifacts/{{distributionName}}-{{projectEffectiveVersion}}-linux-x86_64.tar.gz</transform>
+                                        <platform>linux-x86_64</platform>
+                                    </artifact>
+                                    <artifact>
+                                        <path>{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-linux-x86_64.zip</path>
+                                        <transform>artifacts/{{distributionName}}-{{projectEffectiveVersion}}-linux-x86_64.zip</transform>
+                                        <platform>linux-x86_64</platform>
+                                    </artifact>
+                                    <artifact>
+                                        <path>{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-windows-x86_64.zip</path>
+                                        <transform>artifacts/{{distributionName}}-{{projectEffectiveVersion}}-windows-x86_64.zip</transform>
+                                        <platform>windows-x86_64</platform>
+                                    </artifact>
+                                    <artifact>
+                                        <path>{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-osx-x86_64.zip</path>
+                                        <transform>artifacts/{{distributionName}}-{{projectEffectiveVersion}}-osx-x86_64.zip</transform>
+                                        <platform>osx-x86_64</platform>
+                                    </artifact>
+                                </artifacts>
+                            </jwtc>
+                        </distributions>
+                    </jreleaser>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+                <version>${native.maven.plugin.version}</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>
+                            native-build
+                        </id>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <imageName>jwtc</imageName>
+                    <mainClass>org.rajesh.jwtc.JWTC</mainClass>
+                    <skipTests>true</skipTests>
+                    <buildArgs>
+                        <buildArg>--no-fallback</buildArg>
+                    </buildArgs>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>graalvm-native-build-tools-snapshots</id>
+            <name>GraalVM native-build-tools Snapshots</name>
+            <url>https://raw.githubusercontent.com/graalvm/native-build-tools/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

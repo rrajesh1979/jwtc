@@ -38,14 +38,14 @@ public class JWTC implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         /* Start: Build Claims */
-        ObjectMapper payloadMapper = new ObjectMapper();
         HashMap<Object, Object> payloadMap = new HashMap<>();
-        try {
-            //Convert payload JSON to Map
-            payloadMap = payloadMapper.readValue(payload, HashMap.class);
-        } catch (Exception e) {
-            System.out.println("Error while parsing payload JSON: " + e.getMessage());
-        }
+//        ObjectMapper payloadMapper = new ObjectMapper();
+//        try {
+//            //Convert payload JSON to Map
+//            payloadMap = payloadMapper.readValue(payload, HashMap.class);
+//        } catch (Exception e) {
+//            System.out.println("Error while parsing payload JSON: " + e.getMessage());
+//        }
 
         long nowMillis = System.currentTimeMillis();
 
@@ -53,6 +53,7 @@ public class JWTC implements Callable<Integer> {
         if (ttlMillis > 0) {
             payloadMap.put("exp", nowMillis + ttlMillis);
         }
+        payloadMap.put("payload", payload);
         /* End: Build Claims */
 
         /* Start: Build Header */
@@ -66,13 +67,16 @@ public class JWTC implements Callable<Integer> {
             System.out.println("Using secret: " + secret);
             System.out.println("Using algorithm: " + algorithm);
 
-            String jwt = JWTUtil.createJWT(payloadMap, secret, algorithm, ttlMillis);
+            String jwt = JWTJ.createJWT(payload);
+//                    JWTUtil.createJWT(payloadMap, secret, algorithm, ttlMillis);
             System.out.println("JWT: " + jwt);
         } else if (option.equals("decode")) {
             System.out.println("Encoding claims: " + payloadMap);
             System.out.println("Using secret: " + secret);
             System.out.println("Using algorithm: " + algorithm);
-            String decodedJWT = JWTUtil.decodeJWT(jwt, secret).toString();
+
+            String decodedJWT = JWTJ.decode(jwt);
+//                    JWTUtil.decodeJWT(jwt, secret).toString();
             System.out.println("Decoded JWT: " + decodedJWT);
 
         } else {
