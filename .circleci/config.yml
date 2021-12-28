@@ -48,14 +48,6 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      # Standard maven build and test phases - does not perform a native build (or verify)
-      # ########################
-      - run:
-          name: Build (Standard)
-          command: mvnw clean package -DskipTests -Dmaven.test.skip=true
-      - run:
-          name: Verify (Standard)
-          command: mvnw test
       # Install GraalVM and native-image, needed for a native Quarkus build
       # ########################
       - run:
@@ -64,6 +56,15 @@ jobs:
       - run:
           name: Install native-image
           command: $GRAALVM_HOME/bin/gu install native-image
+
+      # Standard maven build and test phases - does not perform a native build (or verify)
+      # ########################
+      - run:
+          name: Build (Standard)
+          command: mvnw clean package -DskipTests -Dmaven.test.skip=true
+      - run:
+          name: Verify (Standard)
+          command: mvnw test
 
       # Perform a native Quarkus build and verify
       # ########################
