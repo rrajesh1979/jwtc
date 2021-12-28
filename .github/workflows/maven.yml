@@ -17,15 +17,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-latest, macOS-latest, windows-latest ]
+        os: [ ubuntu-latest ]
         gu-binary: [ gu, gu.cmd ]
         exclude:
           - os: ubuntu-latest
             gu-binary: gu.cmd
-          - os: macos-latest
-            gu-binary: gu.cmd
-          - os: windows-latest
-            gu-binary: gu
     runs-on: ${{ matrix.os }}
 
 #    runs-on: ubuntu-latest
