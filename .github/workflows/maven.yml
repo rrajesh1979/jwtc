@@ -63,10 +63,10 @@ jobs:
         restore-keys: ${{ runner.os }}-m2
 
     - name: 'Build Native Image'
-      run: ./mvnw -B --file pom.xml -Pnative package
+      run: ./mvn -B --file pom.xml -Pnative package
 
     - name: 'Create distribution'
-      run: ./mvnw -B --file pom.xml -Pdist package -DskipTests
+      run: ./mvn -B --file pom.xml -Pdist package -DskipTests
 
 
     - name: Upload artifacts
@@ -74,6 +74,7 @@ jobs:
       with:
         name: artifacts
         path: |
+          target/*
           target/*.zip
           target/*.jar
           target/*.tar.gz
