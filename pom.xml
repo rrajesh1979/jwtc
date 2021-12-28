@@ -11,26 +11,36 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.parameters>true</maven.compiler.parameters>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <picocli.version>4.6.2</picocli.version>
-        <logback-classic.version>1.2.9</logback-classic.version>
-        <lombok.version>1.18.22</lombok.version>
-        <cowsay.version>1.1.0</cowsay.version>
-
         <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
-
-        <jjwt.version>0.9.1</jjwt.version>
-
         <javax.xml.version>2.4.0-b180830.0359</javax.xml.version>
-
         <jreleaser.version>0.9.1</jreleaser.version>
-
-<!--        <graalvm.version>20.3.4</graalvm.version>-->
-
+        <graalvm.version>21.3.0</graalvm.version>
         <maven.jar.plugin.version>3.2.0</maven.jar.plugin.version>
         <app.main.class>org.rajesh.jwtc.JWTC</app.main.class>
-
         <native.maven.plugin.version>0.9.9</native.maven.plugin.version>
+        <executable-suffix/>
+        <artifactsDir>target</artifactsDir>
     </properties>
+
+    <developers>
+        <developer>
+            <id>rrajesh1979</id>
+            <name>Rajesh Rajagopalan</name>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <dependencies>
         <!-- https://mvnrepository.com/artifact/info.picocli/picocli -->
@@ -38,38 +48,6 @@
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <version>4.6.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback-classic.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.ricksbrown</groupId>
-            <artifactId>cowsay</artifactId>
-            <version>${cowsay.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>${jjwt.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>${javax.xml.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.json/json -->
@@ -83,7 +61,99 @@
     </dependencies>
 
     <build>
+        <!-- detect OS classifier, needed for distribution Zip file -->
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.7.0</version>
+            </extension>
+        </extensions>
         <plugins>
+
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>4.1</version>
+                <configuration>
+                    <header>etc/license.txt</header>
+                    <strictCheck>true</strictCheck>
+                    <aggregate>true</aggregate>
+                    <excludes>
+                        <exclude>LICENSE.txt</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>2.17.1</version>
+                <configuration>
+                    <configFile>etc/eclipse-formatter-config.xml</configFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>format</id>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <version>1.6.2</version>
+                <configuration>
+                    <groups>java.,javax.,org.,com.</groups>
+                    <removeUnused>true</removeUnused>
+                    <staticAfter>true</staticAfter>
+                    <!-- <staticGroups>java.,javax.,org.w3c.,org.xml.,junit.</staticGroups> -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sort-imports</id>
+                        <goals>
+                            <goal>sort</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <attach>false</attach>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <finalName>jwtc-${project.version}-${os.detected.classifier}</finalName>
+                    <outputDirectory>${app.distribution.directory}</outputDirectory>
+                    <workDirectory>${project.build.directory}/assembly/work</workDirectory>
+                    <skipAssembly>true</skipAssembly>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-distribution</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -95,11 +165,6 @@
                             <groupId>info.picocli</groupId>
                             <artifactId>picocli-codegen</artifactId>
                             <version>${picocli.version}</version>
-                        </path>
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>

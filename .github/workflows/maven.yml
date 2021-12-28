@@ -80,3 +80,36 @@ jobs:
           target/*.zip
           target/*.jar
           target/*.tar.gz
+
+  release:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+
+    steps:
+      # must read HEAD before checkout
+      - name: 'Download all build artifacts'
+        uses: actions/download-artifact@v2
+
+      - name: 'Set up Java'
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: 'zulu'
+
+      - name: 'Release with JReleaser'
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_HOMEBREW_GITHUB_TOKEN: ${{ secrets.JRELEASER_HOMEBREW_GITHUB_TOKEN }}
+#          JRELEASER_SDKMAN_CONSUMER_KEY: ${{ secrets.JRELEASER_SDKMAN_CONSUMER_KEY }}
+#          JRELEASER_SDKMAN_CONSUMER_TOKEN: ${{ secrets.JRELEASER_SDKMAN_CONSUMER_TOKEN }}
+        run: mvn -B --file pom.xml -Prelease -DartifactsDir=artifacts jreleaser:full-release
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: jreleaser-logs
+          path: |
+            target/jreleaser/trace.log
+            target/jreleaser/output.properties
+

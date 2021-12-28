@@ -1,6 +1,5 @@
 package org.rajesh.jwtc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
