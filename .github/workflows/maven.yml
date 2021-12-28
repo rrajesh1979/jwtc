@@ -17,10 +17,12 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-latest, macOS-latest ]
         gu-binary: [ gu, gu.cmd ]
         exclude:
           - os: ubuntu-latest
+            gu-binary: gu.cmd
+          - os: macos-latest
             gu-binary: gu.cmd
     runs-on: ${{ matrix.os }}
 
@@ -48,8 +50,8 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+#    - name: Build with Maven
+#      run: mvn -B package --file pom.xml
 
     - name: 'Install native-image component'
       run: |
