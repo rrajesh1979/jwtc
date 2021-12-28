@@ -4,14 +4,6 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Release version"
-        required: true
-      next:
-        description: "Next version"
-        required: false
   push:
     branches: [ master ]
   pull_request:
@@ -19,8 +11,6 @@ on:
 
 jobs:
   build:
-
-    needs: [ version ]
 
     name: 'Build with Graal on ${{ matrix.os }}'
 
