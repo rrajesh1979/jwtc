@@ -70,7 +70,6 @@ jobs:
     - name: 'Create distribution'
       run: mvn -B --file pom.xml -Pdist package -DskipTests
 
-
     - name: Upload artifacts
       uses: actions/upload-artifact@v2.3.1
       with:
@@ -89,6 +88,11 @@ jobs:
       # must read HEAD before checkout
       - name: 'Download all build artifacts'
         uses: actions/download-artifact@v2
+
+      - name: 'Checkout master'
+        uses: actions/checkout@v2
+        with:
+          ref: master
 
       - name: 'Set up Java'
         uses: actions/setup-java@v2
