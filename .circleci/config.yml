@@ -11,21 +11,70 @@ jobs:
     # You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # Be sure to update the Docker image tag below to openjdk version of your application.
     # A list of available CircleCI Docker Convenience Images are available here: https://circleci.com/developer/images/image/cimg/openjdk
-    docker:
-      - image: cimg/openjdk:17.0.1
+
+    # docker:
+    #   - image: cimg/openjdk:17.0.1
+    machine: true
+    resource_class: medium
+    working_directory: ~/repo
+    environment:
+      MAVEN_OPTS: -Xmx6400m
+      # Set the GRAALVM_HOME env variable to the location where we will be installing GraalVM
+      GRAALVM_HOME: /home/circleci/repo/.graalvm
+
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
-      # Checkout the code as the first step.
+      # Checkout the source code
+      # ########################
       - checkout
-      # Use mvn clean and package as the standard maven build phase
+
+      # Restore any files we may have cached
+      # ########################
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      # Download maven dependencies so that we can cache them
+      # ########################
       - run:
-          name: Build
-          command: mvn -B -DskipTests clean package
-      # Then run your tests!
+          name: Download Dependencies
+          command: mvn dependency:go-offline
+      # Cache the maven dependencies
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
+      # Standard maven build and test phases - does not perform a native build (or verify)
+      # ########################
       - run:
-          name: Test
-          command: mvn test
+          name: Build (Standard)
+          command: ./mvnw clean package -DskipTests -Dmaven.test.skip=true
+      - run:
+          name: Verify (Standard)
+          command: ./mvnw test
+      # Install GraalVM and native-image, needed for a native Quarkus build
+      # ########################
+      - run:
+          name: Install GraalVM
+          command: curl https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-21.3.0/graalvm-ce-java17-linux-amd64-21.3.0.tar.gz -O -J -L && tar xfz graalvm-ce-java17-linux-amd64-21.3.0.tar.gz && mv graalvm-ce-21.3.0 .graalvm && rm graalvm-ce-java17-linux-amd64-21.3.0.tar.gz
+      - run:
+          name: Install native-image
+          command: $GRAALVM_HOME/bin/gu install native-image
+
+      # Perform a native Quarkus build and verify
+      # ########################
+      - run:
+          name: Build (Native)
+          command: ./mvnw clean package -Pnative -DskipTests -Dmaven.test.skip=true
+          no_output_timeout: 30m
+      - run:
+          name: Verify (Native)
+          command: ./mvnw verify -Pnative
+          no_output_timeout: 30m
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
