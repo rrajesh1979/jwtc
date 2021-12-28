@@ -16,15 +16,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 17
+    - name: 'Set up Java'
       uses: actions/setup-java@v2
       with:
-        java-version: '17'
-        distribution: 'adopt'
-        cache: maven
-    - name: setup-graalvm
-      uses: rtc11/setup-graalvm@master
+        java-version: 17
+        distribution: 'zulu'
+    - name: 'Set up Graal'
+      uses: DeLaGuardo/setup-graalvm@5.0
       with:
-        args: https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-21.3.0/graalvm-ce-java17-linux-amd64-21.3.0.tar.gz
+        graalvm: '21.3.0'
+        java: 'java17'
     - name: Build with Maven
       run: mvn -B package --file pom.xml
