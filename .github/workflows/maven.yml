@@ -4,6 +4,14 @@
 name: Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version"
+        required: true
+      next:
+        description: "Next version"
+        required: false
   push:
     branches: [ master ]
   pull_request:
@@ -12,7 +20,25 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    needs: [ version ]
+
+    name: 'Build with Graal on ${{ matrix.os }}'
+
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ ubuntu-latest, macOS-latest, windows-latest ]
+        gu-binary: [ gu, gu.cmd ]
+        exclude:
+          - os: ubuntu-latest
+            gu-binary: gu.cmd
+          - os: macos-latest
+            gu-binary: gu.cmd
+          - os: windows-latest
+            gu-binary: gu
+    runs-on: ${{ matrix.os }}
+
+#    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -38,6 +64,24 @@ jobs:
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+
+    - name: 'Install native-image component'
+      run: |
+        ${{ matrix.gu-binary }} install native-image
+
+    - name: 'Cache Maven packages'
+      uses: actions/cache@v2.1.7
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: 'Build Native Image'
+      run: ./mvnw -B --file pom.xml -Pnative package
+
+    - name: 'Create distribution'
+      run: ./mvnw -B --file pom.xml -Pdist package -DskipTests
+
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2.3.1
