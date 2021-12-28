@@ -52,10 +52,10 @@ jobs:
       # ########################
       - run:
           name: Build (Standard)
-          command: ./mvnw clean package -DskipTests -Dmaven.test.skip=true
+          command: mvnw clean package -DskipTests -Dmaven.test.skip=true
       - run:
           name: Verify (Standard)
-          command: ./mvnw test
+          command: mvnw test
       # Install GraalVM and native-image, needed for a native Quarkus build
       # ########################
       - run:
@@ -69,11 +69,11 @@ jobs:
       # ########################
       - run:
           name: Build (Native)
-          command: ./mvnw clean package -Pnative -DskipTests -Dmaven.test.skip=true
+          command: mvnw clean package -Pnative -DskipTests -Dmaven.test.skip=true
           no_output_timeout: 30m
       - run:
           name: Verify (Native)
-          command: ./mvnw verify -Pnative
+          command: mvnw verify -Pnative
           no_output_timeout: 30m
 
 # Invoke jobs via workflows
