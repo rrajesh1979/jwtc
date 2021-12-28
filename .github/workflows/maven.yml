@@ -42,7 +42,8 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2.3.1
       with:
-        name: '${{ github.workflow.event.workflow_event.name }}'
-        path: target/
-        target-directory: '${{ github.workflow.event.workflow_event.name }}'
-        cache-key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        name: artifacts
+        path: |
+          target/*.zip
+          target/*.jar
+          target/*.tar.gz
