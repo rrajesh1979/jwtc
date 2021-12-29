@@ -32,7 +32,7 @@
             <outputDirectory>./</outputDirectory>
         </file>
         <file>
-            <source>${project.build.directory}/${project.artifactId}-${project.version}{executable-suffix}</source>
+            <source>${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
             <outputDirectory>./bin</outputDirectory>
             <destName>jwtc${executable-suffix}</destName>
         </file>
