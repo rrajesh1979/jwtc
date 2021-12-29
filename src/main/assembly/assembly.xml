@@ -32,10 +32,6 @@
             <outputDirectory>./</outputDirectory>
         </file>
         <file>
-            <source>jwtc_completion</source>
-            <outputDirectory>./</outputDirectory>
-        </file>
-        <file>
             <source>${project.build.directory}/${project.artifactId}-${project.version}-runner${executable-suffix}</source>
             <outputDirectory>./bin</outputDirectory>
             <destName>jwtc${executable-suffix}</destName>
